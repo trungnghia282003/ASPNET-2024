@@ -1,0 +1,57 @@
+﻿@model IEnumerable<DatabaseFirstDemo16112023.Models.ProductCategory>
+
+@{
+	ViewData["Title"] = "Index";
+	Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+	<div class="col-md-12">
+		<section class="panel">
+			<header class="panel-heading">
+				Danh mục phân loại sản phẩm
+			</header>
+			<div class="panel-body">
+				<div class="col-md-12">
+					<form asp-action="" method="get">
+						<div class="form-group">
+							<label for="SearchingString">Tìm kiếm:</label>
+							<input type="text" name="SearchString"
+								   value="@ViewData["CurrentFilter"]" />
+							<input type="submit" value="Tìm" class="btn btn-primary" />
+							<a asp-action="Index" class="btn btn-success">Trở về</a>
+						</div>
+					</form>
+					<p>
+						<a asp-action="Create" class="btn btn-danger">Thêm mới</a>
+					</p>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>
+									@Html.DisplayNameFor(model => model.CategoryName)
+								</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var item in Model)
+							{
+								<tr>
+									<td>
+										@Html.DisplayFor(modelItem => item.CategoryName)
+									</td>
+									<td>
+										<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success">Sửa</a>
+										<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Chi tiết</a>
+										<a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Xoá</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>

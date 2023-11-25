@@ -1,0 +1,30 @@
+﻿@model DatabaseFirstDemo16112023.Models.ProductCategory
+
+@{
+	ViewData["Title"] = "Details";
+	Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+	<div class="col-md-12">
+		<section class="panel">
+			<header class="panel-heading">
+				Chi tiết loại sản phẩm
+			</header>
+			<div class="panel-body">
+				<div class="col-sm-12">
+					<dt class="col-sm-2">
+						@Html.DisplayNameFor(model => model.CategoryName)
+					</dt>
+					<dd class="col-sm-10">
+						@Html.DisplayFor(model => model.CategoryName)
+					</dd>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+<div>
+	<a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Sửa</a>
+	<a asp-action="Index" class="btn btn-success">Trở về</a>
+</div>

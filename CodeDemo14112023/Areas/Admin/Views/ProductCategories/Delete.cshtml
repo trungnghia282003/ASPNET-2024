@@ -1,0 +1,31 @@
+﻿@model DatabaseFirstDemo16112023.Models.ProductCategory
+
+@{
+	ViewData["Title"] = "Delete";
+	Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+	<div class="col-md-12">
+		<section class="panel">
+			<header class="panel-heading">
+				<h3>Bạn có chắc chắn muốn xóa loại sản phẩm này không?</h3>
+			</header>
+			<div class="panel-body">
+				<div class="col-md-12">
+					<dd class="col-md-2">
+						@Html.DisplayNameFor(model => model.CategoryName)
+					</dd>
+					<dd class="col-md-10">
+						@Html.DisplayFor(model => model.CategoryName)
+					</dd>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+<form asp-action="Delete">
+	<input type="hidden" asp-for="Id" />
+	<input type="submit" value="Xoá" class="btn btn-danger" />
+	<a asp-action="Index" class="btn btn-success">Trở về</a>
+</form>

@@ -1,0 +1,90 @@
+﻿@model CodeDemo14112023.Models.LoginModel
+@{
+	Layout = null;
+}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Trang đăng nhập</title>
+
+	<!--Core CSS -->
+	<link href="~/admin/bs3/css/bootstrap.min.css" rel="stylesheet">
+	<link href="~/admin/css/bootstrap-reset.css" rel="stylesheet">
+	<link href="~/admin/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+	<!-- Custom styles for this template -->
+	<link href="~/admin/css/style.css" rel="stylesheet">
+	<link href="~/admin/css/style-responsive.css" rel="stylesheet" />
+</head>
+
+<body class="login-body">
+
+	<div class="container">
+		<form asp-action="Index" method="post">
+			<div class="form-signin">
+				<h2 class="form-signin-heading">Đăng nhập</h2>
+				<div class="login-wrap">
+					@{
+						if (TempData["Fail"] != null)
+						{
+							<div id="alertBox" class="alert alert-danger">
+								@TempData["Fail"]
+							</div>
+						}
+					}
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="form-group">
+						<label asp-for="UserName" class="control-label"></label>
+						@* @Html.EditorFor(model=>model.UserName,new)*@
+						<input asp-for="UserName" class="form-control" placeholder="Mời nhập tên đăng nhập" />
+						<span asp-validation-for="UserName" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Password" class="control-label"></label>
+						<input asp-for="Password" class="form-control" placeholder="Mời nhập mật khẩu" />
+						<span asp-validation-for="Password" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<input type="submit" value="Đăng nhập" class="btn btn-primary" />
+					</div>
+				</div>
+			</div>
+		</form>
+		<!-- Modal -->
+		<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Forgot Password ?</h4>
+					</div>
+					<div class="modal-body">
+						<p>Enter your e-mail address below to reset your password.</p>
+						<input type="text" name="email" placeholder="Email" autocomplete="off" class="form-control placeholder-no-fix">
+
+					</div>
+					<div class="modal-footer">
+						<button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+						<button class="btn btn-success" type="button">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- modal -->
+	</div>
+
+	<!-- Placed js at the end of the document so the pages load faster -->
+	<!--Core js-->
+	<script src="~/admin/js/jquery.js"></script>
+	<script src="~/admin/bs3/js/bootstrap.min.js"></script>
+
+	<script>
+		$(function () {
+			$('#alertBox').removeClass('hide');
+			$('#alertBox').delay(5000).slideUp(500);
+		})
+	</script>
+</body>
+</html>

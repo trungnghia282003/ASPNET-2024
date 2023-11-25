@@ -1,0 +1,22 @@
+﻿@{
+	ViewData["Title"] = "Home";
+
+}
+
+<div class="text-center">
+	@{
+		if (TempData["Info"] != null)
+		{
+			<div id="alertBox" class="alert alert-danger">Welcome @TempData["Info"]</div>
+		}
+	}
+	<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+@section Scripts{
+	<script>
+		$(function () {
+			$('#alertBox').removeClass('hide');
+			$('#alertBox').delay(5000).slideUp(500);
+		})
+	</script>
+}

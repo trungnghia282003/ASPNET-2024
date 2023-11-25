@@ -1,0 +1,319 @@
+﻿@* @model IEnumerable<DatabaseFirstDemo16112023.Models.User> *@
+﻿@using DatabaseFirstDemo16112023.Models.DataAccess;
+@using DatabaseFirstDemo16112023.Models;
+@model CodeDemo14112023.Areas.Admin.Models.RoleUser
+
+@{
+	ViewData["Title"] = "Index";
+	Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+	<div class="col-md-12">
+		<section class="panel">
+			<header class="panel-heading">
+				Quản lý Người dùng
+			</header>
+			<div class="panel-body">
+				<div class="col-md-12">
+					<p>
+						<a class="btn btn-danger create">Tạo mới</a>
+					</p>
+					@{
+						if (TempData["AlertMessage"] != null)
+						{
+							<div id="alertBox" class="alert @TempData["Type"]">
+								@TempData["AlertMessage"]
+							</div>
+						}
+					}
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>
+									Tên đăng nhập
+								</th>
+								<th>
+									Họ tên
+								</th>
+								<th>
+									Địa chỉ
+								</th>
+								<th>
+									Thư điện tử
+								</th>
+								<th>
+									Mật khẩu
+								</th>
+								<th align="center">
+									Trạng thái
+								</th>
+								<th>
+									Quyền truy cập
+								</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var item in Model.Users)
+							{
+								UsersDetail usersDetail = Model.UserDetails.SingleOrDefault(p => p.UserId == item.UserId);
+								<tr>
+									<td>
+										@Html.DisplayFor(modelItem => item.UserName)
+									</td>
+									<td>
+										@usersDetail.FullName
+									</td>
+									<td>
+										@usersDetail.Address
+									</td>
+									<td>
+										@usersDetail.Email
+									</td>
+									<td>
+										@Html.DisplayFor(modelItem => item.Password)
+									</td>
+									<td align="center">
+										<a href="#" class="btn @((bool)item.Status ? "btn-danger" : "btn-default") btn-active"
+										   data-id="@item.UserId">@((bool)item.Status ? "Kích hoạt" : "Khóa")</a>
+									</td>
+									<td align="center">
+										@foreach (var item2 in Model.Roles.Where(p => p.Id == item.RoleId))
+										{
+											@Html.DisplayFor(modelItem => item2.Name)
+										}
+									</td>
+									<td>
+										<button class="btn btn-danger edit" data-id="@item.UserId">Sửa</button>&nbsp;
+										<a class="btn btn-danger" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a> &nbsp;
+										<a class="btn btn-danger delete" data-id="@item.UserId">Xoá</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+<div id="modal-form" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"></h4>
+			</div>
+			<div class="modal-body">
+				<form id="form-users" method="post" action="#">
+					<div class="form-group">
+						<label for="UserName">Tên đăng nhập</label>
+						<input type="text" class="form-control" id="UserName" name="UserName" placeholder="Nhập tên đăng nhập" required>
+					</div>
+					<div class="form-group">
+						<label for="Password">Mật khẩu</label>
+						<input type="password" class="form-control" id="Password" name="Password" placeholder="Nhập mật khẩu" required>
+					</div>
+					<div class="form-group">
+						<label for="FullName">Họ và tên</label>
+						<input type="text" class="form-control" id="FullName" name="FullName" placeholder="Nhập họ tên" required>
+					</div>
+					<div class="form-group">
+						<label for="RoleId">Quyền truy cập</label>
+						@Html.DropDownList("RoleId", (SelectList)ViewBag.Roles, new { @class =
+						"form-control", @id = "cboRoleId" })
+					</div>
+					<div class="form-group">
+						<label for="Address">Địa chỉ</label>
+						<input type="text" class="form-control" id="Address" name="Address" placeholder="Nhập địa chỉ" required>
+					</div>
+					<div class="form-group">
+						<label for="Email">Thư điện tử</label>
+						<input type="email" class="form-control" id="Email" name="Email" placeholder="Nhập thư điện tử" required>
+					</div>
+					<div class="form-group">
+						<label for="Status">Trạng thái</label>
+						@Html.CheckBox("Status", true)
+					</div>
+
+					<input type="hidden" id="UserId" name="UserId" />
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" id="btn-save">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Delete Modal -->
+<div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"></h4>
+			</div>
+			<div class="modal-body">
+				Bạn có chắc muốn xóa mục này?
+				<!-- Hidden field to store the id of the product -->
+				<input type="hidden" id="delete-id">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+				<button type="button" class="btn btn-danger" id="btn-delete">Xóa</button>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts{
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajax-unobtrusive/3.2.6/jquery.unobtrusive-ajax.min.js"></script>
+	<script>
+
+		$(document).ready(function () {
+			// Create User
+			$(document).on('click', '.create', function () {
+				$('#modal-form').modal('show');
+				$('.modal-title').text('Create User');
+				$('#btn-save').attr('data-action', '@Url.Action("Create", "Users")');
+				$('#form-users').trigger('reset');
+			});
+		});
+		// Save user
+		$(document).on('click', '#btn-save', function () {
+			var form = $('#form-users');
+			var userDetail = {
+				FullName: $('#FullName').val(),
+				Address: $('#Address').val(),
+				Email: $('#Email').val()
+			};
+			var data = form.serializeArray();
+			data.push({ name: 'userDetail.FullName', value: userDetail.FullName });
+			data.push({ name: 'userDetail.Address', value: userDetail.Address });
+			data.push({ name: 'userDetail.Email', value: userDetail.Email });
+
+			// Lấy giá trị từ các trường thuộc tính của user trong form
+			// Ví dụ:
+			var user = {
+				UserName: $('#UserName').val(),
+				Password: $('#Password').val(),
+				RoleId: $('#RoleId').val(),
+				Status: $('#Status').is(':checked') // Lấy giá trị checked của trường Status
+			};
+			data.push({ name: 'user.UserName', value: user.UserName });
+			data.push({ name: 'user.Password', value: user.Password });
+			data.push({ name: 'user.RoleId', value: user.RoleId });
+			data.push({ name: 'user.Status', value: user.Status });
+
+			$.ajax({
+				url: $(this).data('action'),
+				type: 'POST',
+				data: $.param(data),
+				success: function (response) {
+					if (response.success) {
+						location.reload();
+					} else {
+						alert(response.message);
+					}
+				},
+				error: function (error) {
+					console.log(error);
+				}
+			});
+		});
+
+		// Edit product
+		$(document).on('click', '.edit', function () {
+			var id = $(this).data('id');
+			//var user = getUserById(userId);
+			$.get('@Url.Action("Edit", "Users")', { id: id })
+				.done(function (response) {
+					if (response.success) {
+						console.log(response.data.id);
+						$('#modal-form').modal('show');
+						$('.modal-title').text('Edit Users');
+						$('#btn-save').attr('data-action', '@Url.Action("Edit", "Users")');
+						$('#UserId').val(response.data.id);
+						$('#UserName').val(response.data.name);
+						$('#FullName').val(response.data.name);
+						$('#RoleId').val(response.data.name);
+						$('#Address').val(response.data.name);
+						$('#Email').val(response.data.name);
+						$('#Status').val(response.data.name);
+					} else {
+						alert(response.message);
+					}
+				})
+				.fail(function (error) {
+					console.log(error);
+				});
+		});
+
+		// Delete product
+		$(document).on('click', '.delete', function () {
+			var id = $(this).data('id');
+			$('#delete-id').val(id);
+			$('#modal-delete').modal('show');
+		});
+
+		// Delete product
+		$(document).on('click', '#btn-delete', function () {
+			var id = $('#delete-id').val();
+			//var url = '/NewsCategory/Delete/' + id;
+			console.log(id);
+			//console.log(url);
+			$.post('@Url.Action("Delete", "Users")', { id: id })
+				.done(function (response) {
+					if (response.success) {
+						$('#modal-delete').modal('hide');
+						location.reload();
+					} else {
+						alert(response.message);
+					}
+				})
+				.fail(function (error) {
+					console.log(error);
+				});
+		});
+
+		var user = {
+			init: function () {
+				user.registerEvents();
+			},
+			registerEvents: function () {
+				$('.btn-active').off('click').on('click', function (e) {
+					e.preventDefault();//Nếu sự kiện click đã được click thì
+					//gỡ ra và gán sự kiện click khác vào với function truyền event mới gọi AJAX, đầu tiên
+					//event sẽ về default như mặc định ban đầu(giống như khi chưa làm gì cả) – tức reset
+					//lại(e.preventDefault)
+					var btn = $(this);
+					var id = btn.data('id');
+					$.ajax({
+						url: "/Admin/Users/ChangeStatus",
+						data: { id: id },
+						datatype: "json",
+						type: "POST",
+						success: function (response) {
+							console.log(response);
+							if (response.status == true) {
+								btn.text('Kích hoạt');
+								btn.removeClass('btn-default').addClass('btn-danger');
+							}
+							else {
+								btn.text('Khóa');
+								btn.removeClass('btn-danger').addClass('btn-default');
+							}
+						}
+					});
+				});
+			}
+		}
+		user.init();
+
+		$(function () {
+			$('#alertBox').removeClass('hide');
+			$('#alertBox').delay(5000).slideUp(500);
+		})
+	</script>
+                    }
